@@ -1,0 +1,1257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VAXINX Protocol Defense Deck</title>
+  <style>
+    body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background: linear-gradient(to bottom right, rgba(15,15,15,0.7), rgba(32,32,112,0.7), rgba(0,0,0,0.7)),
+              url('BGVaxinX.jpg') no-repeat center center fixed;
+  background-size: cover;
+  color: #00ffcc;
+  text-align: center;
+  padding: 40px;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+      color: #00ffcc;
+      text-align: center;
+      padding: 40px;
+      user-select: none;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+    }
+    
+    h1 {
+      font-size: 3rem;
+      text-shadow: 0 0 15px #00ffcc;
+    }
+    
+    p {
+      font-size: 1.2rem;
+      color: #c0ffee;
+    }
+    
+    /* Card Grid Layout */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 30px;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    
+    .card-image-container {
+      position: relative;
+      flex-grow: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 250px;
+    }
+    
+    .card-preview {
+      margin: 0;
+      max-width: none;
+      width: 100%;
+      height: 500px;
+      perspective: 1000px;
+      cursor: pointer;
+    }
+    
+    .card-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      text-align: center;
+      transition: transform 0.8s;
+      transform-style: preserve-3d;
+    }
+    
+    .card-preview.flipped .card-inner {
+      transform: rotateY(180deg);
+    }
+    
+    .card-front, .card-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      border: 3px dashed #00ffcc;
+      border-radius: 20px;
+      padding: 20px;
+      background-color: rgba(0, 255, 200, 0.1);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 0 30px rgba(0, 255, 204, 0.3);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    
+    .card-back {
+      background: linear-gradient(135deg, rgba(0, 255, 200, 0.15), rgba(32, 32, 112, 0.3));
+      transform: rotateY(180deg);
+      border-color: #ff6b6b;
+    }
+    
+    .card-front:hover, .card-back:hover {
+      box-shadow: 0 0 40px rgba(0, 255, 204, 0.5);
+      transform: translateZ(10px);
+    }
+    
+    img {
+      max-width: 100%;
+      border-radius: 10px;
+      box-shadow: 0 0 12px #00ffcc;
+      pointer-events: none;
+      -webkit-user-drag: none;
+      -khtml-user-drag: none;
+      -moz-user-drag: none;
+      -o-user-drag: none;
+      user-drag: none;
+    }
+    
+    .button {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 12px 24px;
+      font-weight: bold;
+      background: #00ffcc;
+      color: #000;
+      border-radius: 8px;
+      text-decoration: none;
+      box-shadow: 0 0 10px #00ffcc;
+      transition: background 0.3s ease;
+    }
+    
+    .button:hover {
+      background: #00ffaa;
+    }
+    
+    /* Security overlay for images */
+    .image-shield {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: transparent;
+      z-index: 10;
+      pointer-events: none;
+    }
+    
+    /* Disable text selection styling */
+    ::selection {
+      background: transparent;
+    }
+    
+    ::-moz-selection {
+      background: transparent;
+    }
+    
+    /* Security warning overlay */
+    .security-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(255, 0, 0, 0.9);
+      color: white;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      font-size: 2rem;
+      text-align: center;
+    }
+    
+    .security-message {
+      background: #000;
+      padding: 30px;
+      border-radius: 10px;
+      border: 2px solid #ff0000;
+    }
+    
+    .lore-text {
+      font-size: 0.9rem;
+      color: #ff6b6b;
+      text-align: left;
+      line-height: 1.4;
+      overflow-y: auto;
+      max-height: 300px;
+    }
+    
+    .lore-title {
+      color: #ff6b6b;
+      font-size: 1.3rem;
+      text-shadow: 0 0 10px #ff6b6b;
+      margin-bottom: 15px;
+    }
+    
+    .card-stats {
+      font-size: 0.8rem;
+      color: #00ffcc;
+      border-top: 1px solid #00ffcc;
+      padding-top: 10px;
+      margin-top: 10px;
+    }
+    
+    .flip-hint {
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      font-size: 0.7rem;
+      color: #888;
+      animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { opacity: 0.5; }
+      50% { opacity: 1; }
+    }
+    
+    @keyframes glitch {
+      0% { transform: translate(0); }
+      20% { transform: translate(-2px, 2px); }
+      40% { transform: translate(-2px, -2px); }
+      60% { transform: translate(2px, 2px); }
+      80% { transform: translate(2px, -2px); }
+      100% { transform: translate(0); }
+    }
+    
+    /* Fake console messages */
+    .console-warning {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      background: #000;
+      color: #ff0000;
+      padding: 10px;
+      border-radius: 5px;
+      font-family: monospace;
+      font-size: 12px;
+      z-index: 1000;
+      display: none;
+    }
+  
+.capsule-bar {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  background: rgba(15, 15, 25, 0.8);
+  border: 2px dashed #00ffcc;
+  border-radius: 15px;
+  padding: 12px 25px;
+  z-index: 1000;
+  box-shadow: 0 0 20px #00ffcc88;
+  font-family: 'Orbitron', sans-serif;
+  flex-wrap: wrap;
+}
+
+.bar-link {
+  text-decoration: none;
+  font-weight: bold;
+  padding: 10px 15px;
+  border-radius: 10px;
+  transition: all 0.2s ease-in-out;
+}
+
+.pink-glitch {
+  background: #1e1e2f;
+  color: #ff69b4;
+  border: 2px dashed #ff69b4;
+  box-shadow: 0 0 12px #ff69b4aa;
+}
+.pink-glitch:hover {
+  background: #ff1493;
+  color: #fff;
+  text-shadow: 0 0 6px #fff;
+}
+
+.gold-glow {
+  background: #000;
+  color: #FFD700;
+  border: 2px solid #FFD700;
+  box-shadow: 0 0 10px #FFD70088;
+}
+.gold-glow:hover {
+  background: #333;
+  color: #fff;
+  text-shadow: 0 0 6px #fff;
+}
+
+.qr-center {
+  text-align: center;
+}
+.qr-center p {
+  margin: 0;
+  font-size: 14px;
+  color: #FFD700;
+}
+
+}
+
+}
+
+.capsule-bar {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  background: rgba(15, 15, 25, 0.8);
+  border: 2px dashed #00ffcc;
+  border-radius: 15px;
+  padding: 12px 25px;
+  z-index: 1000;
+  box-shadow: 0 0 20px #00ffcc88;
+  font-family: 'Orbitron', sans-serif;
+  flex-wrap: wrap;
+}
+
+.bar-link {
+  text-decoration: none;
+  font-weight: bold;
+  padding: 10px 15px;
+  border-radius: 10px;
+  transition: all 0.2s ease-in-out;
+}
+
+.pink-glitch {
+  background: #1e1e2f;
+  color: #ff69b4;
+  border: 2px dashed #ff69b4;
+  box-shadow: 0 0 12px #ff69b4aa;
+}
+.pink-glitch:hover {
+  background: #ff1493;
+  color: #fff;
+  text-shadow: 0 0 6px #fff;
+}
+
+.gold-glow {
+  background: #000;
+  color: #FFD700;
+  border: 2px solid #FFD700;
+  box-shadow: 0 0 10px #FFD70088;
+}
+.gold-glow:hover {
+  background: #333;
+  color: #fff;
+  text-shadow: 0 0 6px #fff;
+}
+
+.qr-center {
+  text-align: center;
+}
+.qr-center p {
+  margin: 0;
+  font-size: 14px;
+  color: #FFD700;
+}
+.qr-center img {
+  width: 80px;
+  margin-top: 5px;
+  border: 2px dashed #FFD700;
+  padding: 5px;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 10px;
+}
+
+@media (max-width: 768px) {
+  .capsule-bar {
+    flex-direction: column;
+    gap: 20px;
+    padding: 20px;
+    width: 90%;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 15px;
+  }
+
+  .qr-center img {
+    width: 100px;
+  }
+
+  .bar-link {
+    width: 100%;
+    text-align: center;
+    font-size: 16px;
+  }
+
+  .qr-center p {
+    font-size: 16px;
+  }
+}
+
+</style>
+
+
+<style>
+.capsule-pinterest-link {
+  display: inline-block;
+  color: #ff69b4;
+  font-size: 18px;
+  margin-top: 15px;
+  text-decoration: none;
+  font-weight: bold;
+  background: linear-gradient(135deg, #1e1e2f, #4b0082);
+  padding: 12px 30px;
+  border-radius: 15px;
+  border: 2px dashed #ff69b4;
+  box-shadow: 0 0 20px rgba(255, 105, 180, 0.7);
+  font-family: 'Orbitron', sans-serif;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+.capsule-pinterest-link:hover {
+  color: #ffffff;
+  background: #ff1493;
+  text-shadow: 0 0 8px #fff;
+  transform: scale(1.03);
+  animation: glitchPulse 0.3s infinite;
+}
+@keyframes glitchPulse {
+  0% { transform: scale(1.03) translate(0, 0); }
+  20% { transform: scale(1.03) translate(-2px, 2px); }
+  40% { transform: scale(1.03) translate(2px, -1px); }
+  60% { transform: scale(1.03) translate(-1px, 1px); }
+  80% { transform: scale(1.03) translate(2px, 2px); }
+  100% { transform: scale(1.03) translate(0, 0); }
+}
+
+.capsule-bar {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  background: rgba(15, 15, 25, 0.8);
+  border: 2px dashed #00ffcc;
+  border-radius: 15px;
+  padding: 12px 25px;
+  z-index: 1000;
+  box-shadow: 0 0 20px #00ffcc88;
+  font-family: 'Orbitron', sans-serif;
+  flex-wrap: wrap;
+}
+
+.bar-link {
+  text-decoration: none;
+  font-weight: bold;
+  padding: 10px 15px;
+  border-radius: 10px;
+  transition: all 0.2s ease-in-out;
+}
+
+.pink-glitch {
+  background: #1e1e2f;
+  color: #ff69b4;
+  border: 2px dashed #ff69b4;
+  box-shadow: 0 0 12px #ff69b4aa;
+}
+.pink-glitch:hover {
+  background: #ff1493;
+  color: #fff;
+  text-shadow: 0 0 6px #fff;
+}
+
+.gold-glow {
+  background: #000;
+  color: #FFD700;
+  border: 2px solid #FFD700;
+  box-shadow: 0 0 10px #FFD70088;
+}
+.gold-glow:hover {
+  background: #333;
+  color: #fff;
+  text-shadow: 0 0 6px #fff;
+}
+
+.qr-center {
+  text-align: center;
+}
+.qr-center p {
+  margin: 0;
+  font-size: 14px;
+  color: #FFD700;
+}
+.qr-center img {
+  width: 80px;
+  margin-top: 5px;
+  border: 2px dashed #FFD700;
+  padding: 5px;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 10px;
+}
+
+@media (max-width: 768px) {
+  .capsule-bar {
+    flex-direction: column;
+    gap: 20px;
+    padding: 20px;
+    width: 90%;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 15px;
+  }
+
+  .qr-center img {
+    width: 100px;
+  }
+
+  .bar-link {
+    width: 100%;
+    text-align: center;
+    font-size: 16px;
+  }
+
+  .qr-center p {
+    font-size: 16px;
+  }
+}
+
+</style>
+
+
+<style>
+/* Override Footer Collision Fix */
+body {
+  padding-bottom: 160px !important;
+}
+.capsule-bar {
+  bottom: 50px !important;
+}
+</style>
+
+</head>
+<body>
+
+  <div class="security-overlay" id="securityOverlay">
+    <div class="security-message">
+      <h2>🚨 SECURITY BREACH DETECTED 🚨</h2>
+      <p>Unauthorized access attempt blocked!</p>
+      <p>VaxinX Protocol engaged...</p>
+    </div>
+  </div>
+
+  <div class="console-warning" id="consoleWarning">
+    WARNING: Unauthorized inspection detected<br>
+    VaxinX Defense Protocol: ACTIVE
+  </div>
+
+  <h1>🧬 VAXINX PROTOCOL DECK</h1>
+  <p>Defend the future. Fight the viral chains. Train now for 2050.</p>
+
+  <!-- Card Collection Grid -->
+  <div class="card-grid">
+    
+    <!-- Card 1: SCRYPTARRR -->
+    <div class="card-preview" onclick="flipCard(this)">
+      <div class="card-inner">
+        <div class="card-front">
+          <h2>🏴‍☠️ SCRYPTARRR</h2>
+          <div class="card-image-container">
+            <img src="scryptarrr_front.png" alt="Scryptarrr Card" />
+            <div class="image-shield"></div>
+          </div>
+          <div class="card-stats">
+            <p><strong>ATK:</strong> 970 | <strong>DEF:</strong> 720 | <strong>PLUNDER:</strong> 88%</p>
+          </div>
+          <div class="flip-hint">Click to reveal lore ↻</div>
+        </div>
+        
+        <div class="card-back">
+          <h3 class="lore-title">🏴‍☠️ SCRYPTARRR'S TALE</h3>
+          <div class="lore-text">
+            <p><strong>Origin:</strong> Captain of the legendary ghost ship "Blockchain Revenge," SCRYPTARRR pillages digital treasures across the cyber seas.</p>
+            <p><strong>The Cursed Code:</strong> Once a noble miner, corrupted by forbidden SHA-256 rituals that bound his soul to eternal crypto-piracy.</p>
+            <p><strong>Abilities:</strong><br/>
+            • <em>Hash Plunder:</em> Steals mining power from entire networks<br/>
+            • <em>Spectral Crew:</em> Commands an army of lost validators<br/>
+            • <em>Treasure Hoard:</em> Can hide assets in interdimensional vaults</p>
+            <p><strong>Weakness:</strong> Cannot resist the call of a perfectly crafted smart contract treasure map.</p>
+          </div>
+          <div class="flip-hint">Click to return ↺</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 2: RUGPULLR -->
+    <div class="card-preview" onclick="flipCard(this)">
+      <div class="card-inner">
+        <div class="card-front">
+          <h2>💀 RUGPULLR</h2>
+          <div class="card-image-container">
+            <img src="rugpullr_front.png" alt="Rugpullr Card" />
+            <div class="image-shield"></div>
+          </div>
+          <div class="card-stats">
+            <p><strong>ATK:</strong> 850 | <strong>DEF:</strong> 600 | <strong>EXPLOIT:</strong> 95%</p>
+          </div>
+          <div class="flip-hint">Click to reveal lore ↻</div>
+        </div>
+        
+<script>
+// Voice-over with cancel + cooldown
+let voiceCooldown = false;
+let currentUtterance = null;
+
+document.querySelectorAll('.card-back').forEach(card => {
+  card.addEventListener('mouseenter', () => {
+    if (voiceCooldown || isMuted) return;
+    voiceCooldown = true;
+
+    // Cancel previous speech
+    if (currentUtterance) {
+      window.speechSynthesis.cancel();
+    }
+
+    const lore = card.querySelector('.lore-text').textContent;
+    const utter = new SpeechSynthesisUtterance(lore);
+    currentUtterance = utter;
+    
+    utter.pitch = 0.7;
+    utter.rate = 1;
+    utter.volume = 0.9;
+    utter.lang = 'en-US';
+
+    // Load voices and speak
+    window.speechSynthesis.getVoices();
+    setTimeout(() => {
+      const voices = window.speechSynthesis.getVoices();
+      const preferredVoice = voices.find(v => v.name.includes("Google UK English Male"));
+      if (preferredVoice) utter.voice = preferredVoice;
+      window.speechSynthesis.speak(utter);
+    }, 100);
+
+    // Set a cooldown to prevent spam hover
+    setTimeout(() => {
+      voiceCooldown = false;
+    }, 4000);
+  });
+
+  // Cancel speech when mouse leaves
+  card.addEventListener('mouseleave', () => {
+    if (currentUtterance) {
+      window.speechSynthesis.cancel();
+    }
+  });
+});
+
+
+
+</script>
+
+        <div class="card-back">
+          <h3 class="lore-title">🕷️ RUGPULLR CHRONICLES</h3>
+          <div class="lore-text">
+            <p><strong>Origin:</strong> Born from the collapse of the FakeMoon Protocol, RUGPULLR weaves webs of deception across DeFi space.</p>
+            <p><strong>Abilities:</strong> Liquidity Drain, Trust Weaver, Exit Scam Portal</p>
+            <p><strong>Weakness:</strong> Cannot resist perfectly crafted honeypots</p>
+          </div>
+          <div class="flip-hint">Click to return ↺</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 3: CAPTAIN PHISHOOK -->
+    <div class="card-preview" onclick="flipCard(this)">
+      <div class="card-inner">
+        <div class="card-front">
+          <h2>🎣 CAPTAIN PHISHOOK</h2>
+          <div class="card-image-container">
+            <img src="captain_phishook_front.png" alt="Captain Phishook Card" />
+            <div class="image-shield"></div>
+          </div>
+          <div class="card-stats">
+            <p><strong>ATK:</strong> 780 | <strong>DEF:</strong> 650 | <strong>DECEPTION:</strong> 92%</p>
+          </div>
+          <div class="flip-hint">Click to reveal lore ↻</div>
+        </div>
+        
+        <div class="card-back">
+          <h3 class="lore-title">🎣 THE MASTER ANGLER</h3>
+          <div class="lore-text">
+            <p><strong>Origin:</strong> Once a legitimate fisherman, transformed by exposure to toxic email spam currents in the Digital Ocean.</p>
+            <p><strong>Abilities:</strong><br/>
+            • <em>Perfect Bait:</em> Creates irresistible fake emails<br/>
+            • <em>Identity Net:</em> Captures personal data with surgical precision<br/>
+            • <em>Social Hook:</em> Can manipulate trust through fabricated relationships</p>
+            <p><strong>Weakness:</strong> Two-factor authentication acts as an unbreakable fishing line.</p>
+          </div>
+          <div class="flip-hint">Click to return ↺</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 4: THE EXIT SCAMMER -->
+    <div class="card-preview" onclick="flipCard(this)">
+      <div class="card-inner">
+        <div class="card-front">
+          <h2>👻 THE EXIT SCAMMER</h2>
+          <div class="card-image-container">
+            <img src="exit_scammer_front.png" alt="Exit Scammer Card" />
+            <div class="image-shield"></div>
+          </div>
+          <div class="card-stats">
+            <p><strong>ATK:</strong> 900 | <strong>DEF:</strong> 400 | <strong>VANISH:</strong> 99%</p>
+          </div>
+          <div class="flip-hint">Click to reveal lore ↻</div>
+        </div>
+        
+        <div class="card-back">
+          <h3 class="lore-title">👻 THE PHANTOM THIEF</h3>
+          <div class="lore-text">
+            <p><strong>Origin:</strong> A master of misdirection who learned to phase between dimensions during the Great ICO Crash of 2048.</p>
+            <p><strong>Abilities:</strong><br/>
+            • <em>Dimensional Escape:</em> Can vanish with stolen funds to parallel blockchains<br/>
+            • <em>False Promises:</em> Creates elaborate roadmaps that lead nowhere<br/>
+            • <em>Community Hypnosis:</em> Makes victims defend the scammer</p>
+            <p><strong>Weakness:</strong> Cannot escape from properly audited smart contracts.</p>
+          </div>
+          <div class="flip-hint">Click to return ↺</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 5: GASLEAK -->
+    <div class="card-preview" onclick="flipCard(this)">
+      <div class="card-inner">
+        <div class="card-front">
+          <h2>☢️ GASLEAK</h2>
+          <div class="card-image-container">
+            <img src="gasleak_front.png" alt="Gasleak Card" />
+            <div class="image-shield"></div>
+          </div>
+          <div class="card-stats">
+            <p><strong>ATK:</strong> 820 | <strong>DEF:</strong> 890 | <strong>TOXICITY:</strong> 97%</p>
+          </div>
+          <div class="flip-hint">Click to reveal lore ↻</div>
+        </div>
+        
+        <div class="card-back">
+          <h3 class="lore-title">☢️ THE TOXIC SPREADER</h3>
+          <div class="lore-text">
+            <p><strong>Origin:</strong> Born from corrupted gas optimization protocols, GASLEAK spreads computational poison across networks.</p>
+            <p><strong>Abilities:</strong><br/>
+            • <em>Fee Inflation:</em> Causes gas prices to skyrocket uncontrollably<br/>
+            • <em>Network Clog:</em> Creates transaction bottlenecks<br/>
+            • <em>Miner Corruption:</em> Turns validators against users</p>
+            <p><strong>Weakness:</strong> Layer 2 solutions can contain his toxic spread.</p>
+          </div>
+          <div class="flip-hint">Click to return ↺</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 6: SHILLZER -->
+    <div class="card-preview" onclick="flipCard(this)">
+      <div class="card-inner">
+        <div class="card-front">
+          <h2>📢 SHILLZER</h2>
+          <div class="card-image-container">
+            <img src="shillzer_front.png" alt="Shillzer Card" />
+            <div class="image-shield"></div>
+          </div>
+          <div class="card-stats">
+            <p><strong>ATK:</strong> 750 | <strong>DEF:</strong> 800 | <strong>INFLUENCE:</strong> 94%</p>
+          </div>
+          <div class="flip-hint">Click to reveal lore ↻</div>
+        </div>
+        
+        <div class="card-back">
+          <h3 class="lore-title">📢 THE HYPE MANIPULATOR</h3>
+          <div class="lore-text">
+            <p><strong>Origin:</strong> A former marketing genius corrupted by infinite leverage and moon missions gone wrong.</p>
+            <p><strong>Abilities:</strong><br/>
+            • <em>FOMO Generation:</em> Creates artificial urgency and fear<br/>
+            • <em>Pump Coordination:</em> Manipulates markets with coordinated campaigns<br/>
+            • <em>Influencer Army:</em> Commands legions of fake social media accounts</p>
+            <p><strong>Weakness:</strong> Fundamental analysis and patient investors are immune to his tricks.</p>
+          </div>
+          <div class="flip-hint">Click to return ↺</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <a href="https://your-game-link.com" class="button">🔥 Launch Defense Game</a>
+
+<p style="margin-top: 40px; font-size: 0.9rem;">
+  © 2025 | Created by UrLifeNuggets — Regis Lara 🛡️ | Aka: Mr. Doppio Ronin ☕<br>
+  Injected into the void. No commits. Just double dosage: caffeine & code.
+</p>
+
+  <script>
+    // Card flip functionality
+    function flipCard(cardElement) {
+      cardElement.classList.toggle('flipped');
+      
+      // Add some sound effect simulation
+      console.log('🎵 *Card flip sound effect*');
+      
+      // Add brief glow effect
+      cardElement.style.boxShadow = '0 0 50px rgba(0, 255, 204, 0.8)';
+      setTimeout(() => {
+        cardElement.style.boxShadow = '';
+      }, 300);
+    }
+
+    // Disable right-click context menu
+    document.addEventListener('contextmenu', function(e) {
+      e.preventDefault();
+      showSecurityAlert();
+      return false;
+    });
+
+    // Disable F12, Ctrl+Shift+I, Ctrl+Shift+C, Ctrl+U
+    document.addEventListener('keydown', function(e) {
+      // F12
+      if (e.keyCode === 123) {
+        e.preventDefault();
+        showSecurityAlert();
+        return false;
+      }
+      
+      // Ctrl+Shift+I (DevTools)
+      if (e.ctrlKey && e.shiftKey && e.keyCode === 73) {
+        e.preventDefault();
+        showSecurityAlert();
+        return false;
+      }
+      
+      // Ctrl+Shift+C (Inspect Element)
+      if (e.ctrlKey && e.shiftKey && e.keyCode === 67) {
+        e.preventDefault();
+        showSecurityAlert();
+        return false;
+      }
+      
+      // Ctrl+U (View Source)
+      if (e.ctrlKey && e.keyCode === 85) {
+        e.preventDefault();
+        showSecurityAlert();
+        return false;
+      }
+      
+      // PrintScreen
+      if (e.keyCode === 44) {
+        e.preventDefault();
+        showSecurityAlert();
+        return false;
+      
+      }
+      
+      // Ctrl+C (Copy)
+      if (e.ctrlKey && e.keyCode === 67) {
+        e.preventDefault();
+        return false;
+      }
+      
+      // Ctrl+V (Paste)
+      if (e.ctrlKey && e.keyCode === 86) {
+        e.preventDefault();
+        return false;
+      }
+      
+      // Ctrl+S (Save)
+      if (e.ctrlKey && e.keyCode === 83) {
+        e.preventDefault();
+        showSecurityAlert();
+        return false;
+      }
+    });
+
+    // DevTools detection
+    let devtools = {
+      open: false,
+      orientation: null
+    };
+
+    const threshold = 160;
+
+    setInterval(() => {
+      if (window.outerHeight - window.innerHeight > threshold || 
+          window.outerWidth - window.innerWidth > threshold) {
+        if (!devtools.open) {
+          devtools.open = true;
+          showDevToolsAlert();
+        }
+      } else {
+        devtools.open = false;
+      }
+    }, 500);
+
+    // Alternative DevTools detection
+    let startTime = performance.now();
+    let check = setInterval(() => {
+      console.clear();
+      console.log('VaxinX Protocol: Monitoring active...');
+      if (performance.now() - startTime > 100) {
+        showDevToolsAlert();
+      }
+      startTime = performance.now();
+    }, 1000);
+
+    // Disable drag and drop
+    document.addEventListener('dragstart', function(e) {
+      e.preventDefault();
+      return false;
+    });
+
+    // Disable image saving
+    document.addEventListener('dragstart', function(e) {
+      if (e.target.tagName === 'IMG') {
+        e.preventDefault();
+        return false;
+      }
+    });
+
+    // Show security alert
+    function showSecurityAlert() {
+      const overlay = document.getElementById('securityOverlay');
+      overlay.style.display = 'flex';
+      document.body.classList.add('glitch');
+      
+      setTimeout(() => {
+        overlay.style.display = 'none';
+        document.body.classList.remove('glitch');
+      }, 2000);
+      
+      // Show console warning
+      const warning = document.getElementById('consoleWarning');
+      warning.style.display = 'block';
+      setTimeout(() => {
+        warning.style.display = 'none';
+      }, 3000);
+    }
+
+    // DevTools alert
+    function showDevToolsAlert() {
+      console.clear();
+      console.log('%c🚨 VAXINX SECURITY BREACH DETECTED 🚨', 'color: red; font-size: 20px; font-weight: bold;');
+      console.log('%cUnauthorized access attempt blocked!', 'color: red; font-size: 16px;');
+      console.log('%cVaxinX Protocol engaged...', 'color: red; font-size: 16px;');
+      
+      // Optional: Redirect or refresh page
+      // window.location.reload();
+      
+      showSecurityAlert();
+    }
+
+    // Disable text selection
+    document.onselectstart = function() {
+      return false;
+    };
+
+    document.onmousedown = function() {
+      return false;
+    };
+
+    // Console warning message
+    console.log('%cVaxinX Protocol Defense System Active', 'color: #00ffcc; font-size: 16px; font-weight: bold;');
+    console.log('%cUnauthorized access will be detected and blocked.', 'color: #00ffcc; font-size: 12px;');
+
+    // Disable copy via clipboard
+    document.addEventListener('copy', function(e) {
+      e.clipboardData.setData('text/plain', 'VaxinX Protocol: Copy blocked');
+      e.preventDefault();
+    });
+
+    // Additional protection against console access
+    setTimeout(() => {
+      console.clear();
+    }, 1000);
+  </script>
+
+
+<script>
+function playGlitchSound() {
+  const audio = document.getElementById('glitchAudio');
+  if (audio) {
+    audio.currentTime = 0;
+    audio.play();
+  }
+}
+</script>
+
+
+<style>
+/* Ghost Cursor Trail */
+.ghost-cursor {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: rgba(255, 105, 180, 0.4);
+  pointer-events: none;
+  z-index: 9999;
+  mix-blend-mode: screen;
+  animation: cursorPulse 0.6s infinite;
+}
+@keyframes cursorPulse {
+  0%, 100% { transform: scale(1); opacity: 0.5; }
+  50% { transform: scale(1.5); opacity: 0.2; }
+}
+
+/* Lore Loop Effect */
+.lore-text span.corrupt {
+  animation: glitchText 2s infinite;
+  color: #ff69b4;
+  text-shadow: 0 0 4px #ff69b4;
+}
+
+@keyframes glitchText {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; transform: scale(1.01); }
+}
+
+/* Card Stat Mutation */
+.card-stats.mutating {
+  animation: mutateStats 3s infinite;
+}
+
+@keyframes mutateStats {
+  0% { color: #00ffcc; }
+  50% { color: #ff6b6b; transform: scale(1.05); }
+  100% { color: #00ffcc; }
+}
+  
+
+
+.capsule-bar {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  background: rgba(15, 15, 25, 0.8);
+  border: 2px dashed #00ffcc;
+  border-radius: 15px;
+  padding: 12px 25px;
+  z-index: 1000;
+  box-shadow: 0 0 20px #00ffcc88;
+  font-family: 'Orbitron', sans-serif;
+  flex-wrap: wrap;
+}
+
+.bar-link {
+  text-decoration: none;
+  font-weight: bold;
+  padding: 10px 15px;
+  border-radius: 10px;
+  transition: all 0.2s ease-in-out;
+}
+
+.pink-glitch {
+  background: #1e1e2f;
+  color: #ff69b4;
+  border: 2px dashed #ff69b4;
+  box-shadow: 0 0 12px #ff69b4aa;
+}
+.pink-glitch:hover {
+  background: #ff1493;
+  color: #fff;
+  text-shadow: 0 0 6px #fff;
+}
+
+.gold-glow {
+  background: #000;
+  color: #FFD700;
+  border: 2px solid #FFD700;
+  box-shadow: 0 0 10px #FFD70088;
+}
+.gold-glow:hover {
+  background: #333;
+  color: #fff;
+  text-shadow: 0 0 6px #fff;
+}
+
+.qr-center {
+  text-align: center;
+}
+.qr-center p {
+  margin: 0;
+  font-size: 14px;
+  color: #FFD700;
+}
+.qr-center img {
+  width: 80px;
+  margin-top: 5px;
+  border: 2px dashed #FFD700;
+  padding: 5px;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 10px;
+}
+
+@media (max-width: 768px) {
+  .capsule-bar {
+    flex-direction: column;
+    gap: 20px;
+    padding: 20px;
+    width: 90%;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 15px;
+  }
+
+  .qr-center img {
+    width: 100px;
+  }
+
+  .bar-link {
+    width: 100%;
+    text-align: center;
+    font-size: 16px;
+  }
+
+  .qr-center p {
+    font-size: 16px;
+  }
+}
+
+</style>
+
+<script>
+// Ghost Cursor Logic
+document.addEventListener('mousemove', function(e) {
+  const ghost = document.createElement('div');
+  ghost.className = 'ghost-cursor';
+  ghost.style.left = e.pageX + 'px';
+  ghost.style.top = e.pageY + 'px';
+  document.body.appendChild(ghost);
+  setTimeout(() => ghost.remove(), 600);
+});
+
+// Mutating Card Stats
+setInterval(() => {
+  document.querySelectorAll('.card-stats').forEach(el => {
+    el.classList.toggle('mutating');
+    if (Math.random() > 0.5) {
+      el.innerHTML = '<p><strong>ATK:</strong> ' + (700 + Math.floor(Math.random() * 300)) + 
+                     ' | <strong>DEF:</strong> ' + (500 + Math.floor(Math.random() * 400)) + 
+                     ' | <strong>Ω:</strong> ' + (Math.floor(Math.random() * 100)) + '%</p>';
+    }
+  });
+}, 10000);
+
+// Lore Loop FX: corrupt a random word
+function corruptLoreText() {
+  document.querySelectorAll('.lore-text').forEach(block => {
+    const words = block.textContent.split(' ');
+    const corrupted = words.map(word => {
+      return Math.random() < 0.1 ? '<span class="corrupt">' + word + '</span>' : word;
+    }).join(' ');
+    block.innerHTML = corrupted;
+  });
+}
+setInterval(corruptLoreText, 8000);
+
+
+
+</script>
+
+<div class="capsule-bar">
+  <a href="https://x.com/regislarace" target="_blank" class="bar-link pink-glitch" onclick="playGlitchSound();">
+    🐦 Follow on X
+  </a>
+
+  <a href="https://ph.pinterest.com/UrLifeNuggets/" target="_blank" class="bar-link pink-glitch" onclick="playGlitchSound();">
+    ⚠️ Pinterest Vault
+  </a>
+
+  <div class="qr-center">
+    <p>📡 Scan Vault</p>
+    <img src="opensea_qr.png" alt="OpenSea QR" />
+  </div>
+
+  <div class="shop-links">
+    <a href="https://www.redbubble.com/people/urlifenuggets/explore?asc=u" target="_blank" class="bar-link gold-glow" onclick="document.getElementById('capsuleSound').play();">Redbubble</a>
+    <a href="https://www.teepublic.com/user/urlifenuggets" target="_blank" class="bar-link gold-glow" onclick="document.getElementById('capsuleSound').play();">TeePublic</a>
+  </div>
+
+  <button onclick="toggleMute()" class="bar-link pink-glitch">🔇 Mute</button>
+</div>
+
+<p style="font-size: 0.8rem; text-align: center; opacity: 0.7; margin-top: 10px;">
+  🧬 LangFlow Submission Demo – @ 2025 by Mr. Doppio Ronin ☕
+</p>
+
+<audio id="capsuleSound" src="glitch-sound-effect-96251.mp3" preload="auto"></audio>
+
+
+<script>
+let voiceCooldown = false;
+let currentUtterance = null;
+let isMuted = false;
+
+function toggleMute() {
+  isMuted = !isMuted;
+  const button = document.querySelector('.bar-link.pink-glitch[onclick="toggleMute()"]');
+  button.textContent = isMuted ? "🔊 Unmute" : "🔇 Mute";
+
+  if (window.speechSynthesis && window.speechSynthesis.speaking) {
+    window.speechSynthesis.cancel();
+  }
+}
+
+document.querySelectorAll('.card-back').forEach(card => {
+  card.addEventListener('mouseenter', () => {
+    if (voiceCooldown || isMuted) return;
+    voiceCooldown = true;
+
+    if (currentUtterance) {
+      window.speechSynthesis.cancel();
+    }
+
+    const lore = card.querySelector('.lore-text').textContent;
+    const utter = new SpeechSynthesisUtterance(lore);
+    currentUtterance = utter;
+
+    utter.pitch = 0.7;
+    utter.rate = 1;
+    utter.volume = 0.9;
+    utter.lang = 'en-US';
+
+    setTimeout(() => {
+      const voices = window.speechSynthesis.getVoices();
+      const preferredVoice = voices.find(v => v.name.includes("Google UK English Male"));
+      if (preferredVoice) utter.voice = preferredVoice;
+      window.speechSynthesis.speak(utter);
+    }, 100);
+
+    setTimeout(() => {
+      voiceCooldown = false;
+    }, 4000);
+  });
+
+  card.addEventListener('mouseleave', () => {
+    if (currentUtterance) {
+      window.speechSynthesis.cancel();
+    }
+  });
+});
+</script>
+
+</body>
+</html>
